@@ -9,7 +9,6 @@ connection = sqlite3.connect(DB_FILEPATH)
 cursor = connection.cursor()
 print("CURSOR", cursor)
 
-
 # How many total Characters are there?
 query = "SELECT COUNT (*) FROM charactercreator_character;"
 character_total = cursor.execute(query).fetchall()
@@ -60,27 +59,49 @@ items_per_char = cursor.execute(query8).fetchall()
 print("Items per character", items_per_char)
 
 # How many Weapons does each character have? (Return first 20 rows)
-query9 = """
+query9 = """SELECT
+	c.character_id
+	, c.name
+	, count(distinct w.item_ptr_id) as weapon_count
+	FROM charactercreator_character c
+	left join charactercreator_character_inventory i on c.character_id = i.character_id
+	left join armory_weapon w on i.item_id = w.item_ptr_id
+	group by c.character_id limit 20
 """
+weapons_per_char = cursor.execute(query9).fetchall()
+print("Weapons per character", weapons_per_char)
 
 # On average, how many Items does each Character have?
 query10 = """select avg(item_count) as avg_items
 from (select 
-c.character_id
-, c."name" as character_name
-, count(distinct inv.item_id) as item_count 
-FROM charactercreator_character c 
-left join charactercreator_character_inventory inv 
-on c.character_id = inv.character_id
-group by 1, 2
-)subq
+    c.character_id
+    , c."name" as character_name
+    , count(distinct inv.item_id) as item_count 
+    FROM charactercreator_character c 
+    left join charactercreator_character_inventory inv 
+    on c.character_id = inv.character_id
+    group by 1, 2
+    )subq
 """
 items_char = cursor.execute(query10).fetchall()
 print("Avg.Items per character", items_char)
 
 
 # On average, how many Weapons does each character have?
-
+query11 = """select avg(weapon_count) as avg_weapons_per_count
+from (
+	SELECT
+	c.character_id
+	, c.name
+	, count(distinct w.item_ptr_id) as weapon_count
+	FROM charactercreator_character c
+	left join charactercreator_character_inventory i on c.character_id = i.character_id
+	left join armory_weapon w on i.item_id = w.item_ptr_id
+	group by c.character_id
+	) subq
+"""
+weapons_char_avg = cursor.execute(query11).fetchall()
+print("Avg.weapons per character", weapons_char_avg)
 
 
 ##Part 2, Making and populating a Database
