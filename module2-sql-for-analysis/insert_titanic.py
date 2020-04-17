@@ -13,18 +13,16 @@ DB_PASSWORD = os.getenv('DB_PASSWORD')
 DB_HOST = os.getenv('DB_HOST')
 URL = os.getenv('URL')
 
-#DB_FILEPATH = ('charactercreator_character_inventory.csv')
 connection = psycopg2.connect(
     dbname=DB_NAME, user=DB_USER, password=DB_PASSWORD, host=DB_HOST)
-print("CONNECTION:", connection)
+print('CONNECTION:', connection)
 cursor = connection.cursor()
-
 
 titanic_filepath = 'titanic.csv'
 df = pd.read_csv(titanic_filepath)
 
 engine = create_engine(URL)
-df.to_sql('titanic', engine)
+df.to_sql('character', engine)
 connection = engine.raw_connection()
 connection.commit()
 

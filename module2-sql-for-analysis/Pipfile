@@ -12,6 +12,7 @@ python3-7 = "*"
 python-dotenv = "*"
 psycopg2-binary = "*"
 sqlalchemy = "*"
+sqlite3 = "*"
 
 [requires]
 python_version = "3.6"
